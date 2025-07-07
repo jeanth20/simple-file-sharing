@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Local File Share</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📤 Universal File Share</h1>
+            <p class="subtitle">Share files securely across networks quickly</p>
+            <div class="server-info">
+                <span class="ip-badge">Server: {{ server_url.replace('http://', '').replace('https://', '') }}</span>
+                {% if password_protected %}
+                <span class="security-badge">🔐 Password Protected</span>
+                {% endif %}
+            </div>
+        </header>
+
+        <main>
+            <div class="upload-section">
+                <form id="uploadForm" action="/upload" method="post" enctype="multipart/form-data">
+                    <div class="drop-zone" id="dropZone">
+                        <div class="drop-zone-content">
+                            <div class="upload-icon">📤</div>
+                            <h3>Drop your file here</h3>
+                            <p>or click to browse</p>
+                            <p class="file-limit">Maximum file size: <span id="maxFileSize">Loading...</span></p>
+                            <input type="file" id="fileInput" name="file" required>
+                        </div>
+                    </div>
+
+                    <div class="file-info" id="fileInfo" style="display: none;">
+                        <div class="file-details">
+                            <span class="file-name" id="fileName"></span>
+                            <span class="file-size" id="fileSize"></span>
+                        </div>
+                        <button type="button" class="remove-file" id="removeFile">✕</button>
+                    </div>
+
+                    <div class="password-section">
+                        <div class="password-header">
+                            <h4>🔐 File Security (Recommended for Internet Sharing)</h4>
+                            <p class="password-help">Add a password to protect your file from unauthorized access</p>
+                        </div>
+                        <div class="password-input-group">
+                            <input type="password" id="filePassword" name="file_password"
+                                   placeholder="Enter password for this file (optional but recommended)"
+                                   class="password-input">
+                            <button type="button" class="toggle-password" id="togglePassword">👁️</button>
+                        </div>
+                        <div class="password-strength" id="passwordStrength" style="display: none;">
+                            <div class="strength-bar">
+                                <div class="strength-fill" id="strengthFill"></div>
+                            </div>
+                            <span class="strength-text" id="strengthText">Password strength</span>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="upload-btn" id="uploadBtn" disabled>
+                        <span class="btn-text">Share File</span>
+                        <div class="spinner" style="display: none;"></div>
+                    </button>
+                </form>
+
+                <div class="progress-container" id="progressContainer" style="display: none;">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <div class="progress-text" id="progressText">Uploading...</div>
+                </div>
+            </div>
+
+            <div class="features">
+                <div class="feature">
+                    <div class="feature-icon">📱</div>
+                    <h4>Laptop to Phone</h4>
+                    <p>Share files between devices on the same network quickly</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">🌐</div>
+                    <h4>Internet Ready</h4>
+                    <p>Access from anywhere with proper setup</p>
+                </div>
+
+                <div class="feature">
+                    <div class="feature-icon">🔒</div>
+                    <h4>Password Protected</h4>
+                    <p>Each file can have its own password</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">🔧</div>
+                    <h4>Maximum file size</h4>
+                    <p>200MB Personal <br>
+                       500MB Enterprise <br>
+                    </p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">⚙️</div>
+                    <h4>Total memory limit</h4>
+                    <p>1GB Personal <br>
+                       2GB Enterprise<br>
+                    </p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">⏰</div>
+                    <h4>Auto-Expire</h4>
+                    <p>Files automatically delete after 1 hour</p>
+                </div>
+            </div>
+
+            <div class="instructions">
+                <h3>How to use:</h3>
+                <ol>
+                    <li><strong>Select or drop a file</strong> above</li>
+                    <li><strong>Set a password</strong> (recommended for internet sharing)</li>
+                    <li><strong>Click "Share File"</strong> to upload</li>
+                    <li><strong>Share the link</strong> and password separately for security</li>
+                </ol>
+                <div class="security-tips">
+                    <h4>🛡️ Security Tips for Internet Sharing:</h4>
+                    <ul>
+                        <li>Always use strong passwords for sensitive files</li>
+                        <li>Share the download link and password through different channels</li>
+                        <li>Files automatically expire after 1 hour</li>
+                        <li>Consider using HTTPS in production environments</li>
+                    </ul>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>🌐 Share the server URL: <code>http://{{ local_ip }}:8000</code></p>
+        </footer>
+    </div>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>

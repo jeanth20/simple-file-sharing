@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Shared Successfully - Local File Share</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>✅ File Shared Successfully!</h1>
+            <p class="subtitle">Your file is ready for download</p>
+        </header>
+
+        <main>
+            <div class="success-section">
+                <div class="file-summary">
+                    <div class="file-icon">📄</div>
+                    <div class="file-details">
+                        <h3>{{ filename }}</h3>
+                        <p>Size: {{ "%.2f"|format(file_size / 1024 / 1024) }} MB</p>
+                        <p>Expires: {{ expires_at }}</p>
+                        {% if has_file_password %}
+                        <p class="security-status">🔐 Password Protected</p>
+                        {% else %}
+                        <p class="security-status warning">⚠️ No Password Protection</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="share-options">
+                    <div class="share-link">
+                        {% if has_file_password %}
+                        <label for="downloadUrl">Download Link (Password Required):</label>
+                        {% else %}
+                        <label for="downloadUrl">Download Link (No Password Required):</label>
+                        {% endif %}
+                        <div class="url-container">
+                            <input type="text" id="downloadUrl" value="{{ download_url }}" readonly>
+                            <button class="copy-btn" onclick="copyToClipboard()">📋 Copy</button>
+                        </div>
+                        {% if not has_file_password %}
+                        <p class="no-password-notice">✅ This link works directly - no password needed!</p>
+                        {% endif %}
+                    </div>
+
+                    <div class="qr-section">
+                        <h4>📱 Scan QR Code</h4>
+                        <div class="qr-container">
+                            <img src="{{ qr_code }}" alt="QR Code for download" class="qr-code">
+                        </div>
+                        <p class="qr-help">Scan with your phone's camera to download</p>
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    {% if has_file_password %}
+                    <div class="test-download-info">
+                        <p>⚠️ To test download, you need to add the password to the URL</p>
+                        <a href="{{ download_url }}" class="download-btn disabled" onclick="alert('Add ?password=YOUR_PASSWORD to the URL to download'); return false;">
+                            ⬇️ Test Download (Password Required)
+                        </a>
+                    </div>
+                    {% else %}
+                    <a href="{{ download_url }}" class="download-btn" target="_blank">
+                        ⬇️ Test Download (No Password Required)
+                    </a>
+                    {% endif %}
+                    <a href="/" class="new-file-btn">
+                        📤 Share Another File
+                    </a>
+                </div>
+
+                <div class="share-instructions">
+                    <h4>📋 Sharing Instructions:</h4>
+                    <ol>
+                        <li><strong>Copy the link</strong> and send it via message, email, or any app</li>
+                        {% if has_file_password %}
+                        <li><strong>Share the password separately</strong> for better security</li>
+                        <li><strong>Tell recipients</strong> to add ?password=YOUR_PASSWORD to the URL</li>
+                        {% else %}
+                        <li><strong>⚠️ No password set</strong> - anyone with the link can download</li>
+                        {% endif %}
+                        <li><strong>Show the QR code</strong> for others to scan with their camera</li>
+                    </ol>
+                    {% if has_file_password %}
+                    <div class="password-info">
+                        <h5>🔐 Password Access:</h5>
+                        <p>Recipients can download by adding the password to the URL:</p>
+                        <code>{{ download_url }}?password=YOUR_PASSWORD</code>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="warning-box">
+                    <div class="warning-icon">⚠️</div>
+                    <div class="warning-content">
+                        <strong>Important Security Notes:</strong>
+                        <ul>
+                            <li>This file will expire in 1 hour</li>
+                            <li>The file is stored temporarily in memory</li>
+                            <li>If you close this server, the file will be lost</li>
+                            {% if not has_file_password %}
+                            <li><strong>⚠️ No password protection:</strong> Anyone with the link can download</li>
+                            {% endif %}
+                            <li>For internet sharing, always use HTTPS in production</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>🌐 Server running on: <code>{{ request.url.hostname }}:8000</code></p>
+        </footer>
+    </div>
+
+    <script>
+        function copyToClipboard() {
+            const urlInput = document.getElementById('downloadUrl');
+            urlInput.select();
+            urlInput.setSelectionRange(0, 99999); // For mobile devices
+            
+            try {
+                document.execCommand('copy');
+                const copyBtn = document.querySelector('.copy-btn');
+                const originalText = copyBtn.textContent;
+                copyBtn.textContent = '✅ Copied!';
+                copyBtn.style.background = '#10b981';
+                
+                setTimeout(() => {
+                    copyBtn.textContent = originalText;
+                    copyBtn.style.background = '';
+                }, 2000);
+            } catch (err) {
+                console.error('Failed to copy: ', err);
+                alert('Failed to copy link. Please copy manually.');
+            }
+        }
+
+        // Auto-select URL on click
+        document.getElementById('downloadUrl').addEventListener('click', function() {
+            this.select();
+        });
+    </script>
+</body>
+</html>
